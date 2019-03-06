@@ -1,0 +1,36 @@
+[submodule "couchpotato"]
+	path = couchpotato
+	url = https://github.com/NoahO/docker-couchpotato
+	branch = master
+[submodule "ddclient"]
+	path = ddclient
+	url = https://github.com/NoahO/docker-ddclient
+	branch = master
+[submodule "nginx"]
+	path = nginx
+	url = https://github.com/NoahO/docker-nginx
+	branch = master
+[submodule "nginx-gen"]
+	path = nginx-gen
+	url = https://github.com/NoahO/docker-nginx-gen
+	branch = master
+[submodule "sabnzbd"]
+	path = sabnzbd
+	url = https://github.com/NoahO/docker-sabnzbd
+	branch = master
+[submodule "sickrage"]
+	path = sickrage
+	url = https://github.com/NoahO/docker-sickrage
+	branch = master
+[submodule "timemachine-avahi"]
+	path = timemachine-avahi
+	url = https://github.com/NoahO/docker-timemachine-avahi
+	branch = master
+[submodule "transmission"]
+	path = transmission
+	url = https://github.com/NoahO/docker-transmission
+	branch = master
+[submodule "webdav"]
+	path = webdav
+	url = https://github.com/NoahO/docker-webdav
+	branch = master

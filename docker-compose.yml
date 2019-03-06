@@ -1,0 +1,271 @@
+version: "3.7"
+services:
+  btsync:
+    container_name: btsync
+    restart: always
+    network_mode: host
+    image: resilio/sync
+    volumes:
+      - /media/DockerData/btsync/config:/mnt/sync
+    environment:
+      - TZ=${TZ}
+
+  crashplan:
+    container_name: crashplan
+    restart: always
+    network_mode: host
+    image: jrcs/crashplan
+    environment:
+      - MAX_MEMORY_MB=4096
+      - TZ=${TZ}
+    volumes:
+      - /media/DockerData/crashplan/config:/var/crashplan
+
+  couchpotato:
+    container_name: couchpotato
+    restart: always
+    build: couchpotato
+    ports:
+      - 5050:5050
+    volumes:
+      - /media/DockerData/sabnzbd/config:/sabnzbdconfig
+      - /media/DockerData/transmission/config:/transmissionconfig
+      - /media/DockerData/couchpotato/config:/config
+      - /media/DockerDownloads:/downloads
+      - incomplete-nzbs:/incomplete-nzbs
+      - nzbtomedia:/nzbtomedia
+    depends_on:
+      - transmission
+      - sabnzbd
+    environment:
+      - PUID=1000
+      - PGID=999
+      - TZ=${TZ}
+    networks:
+      - proxy-tier
+
+  ddclient:
+    container_name: ddclient
+    restart: always
+    build: ddclient
+    #  image: yaronr/ddclient:latest
+    environment:
+      - DDNS_SERVER=update.dedyn.io
+      - DDNS_DOMAIN=dedyn.io
+      - DDNS_PROTOCOL=dyndns2
+
+  nginx:
+    restart: always
+    build: nginx
+    container_name: nginx
+    volumes:
+      - nginxconfd:/etc/nginx/conf.d
+      - nginxvhostd:/etc/nginx/vhost.d
+      - nginxhtml:/usr/share/nginx/html:ro
+      - nginxcerts:/etc/nginx/certs:ro
+      - /media/DockerData/nginx/nginx-passwords:/etc/nginx/htpasswd:ro
+      - ./nginx/password.conf:/etc/nginx/conf.d/password.conf:ro
+      - ./nginx/webdavfix.conf:/etc/nginx/conf.d/my_proxy.conf:ro
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - proxy-tier
+    environment:
+      - TZ=${TZ}
+
+  nginx-gen:
+    restart: always
+    build: nginx-gen
+    container_name: nginx-gen
+    volumes:
+      - nginxconfd:/etc/nginx/conf.d
+      - nginxvhostd:/etc/nginx/vhost.d
+      - nginxhtml:/usr/share/nginx/html
+      - nginxcerts:/etc/nginx/certs:ro
+      - /media/DockerData/nginx/nginx-passwords:/etc/nginx/htpasswd:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    entrypoint: /usr/local/bin/docker-gen -notify-sighup nginx -watch -wait 5s:30s /etc/docker-gen/templates/nginx.tmpl /etc/nginx/conf.d/default.conf
+    networks:
+      - proxy-tier
+    environment:
+      - TZ=${TZ}
+
+  nginx-letsencrypt:
+    restart: always
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: nginx-letsencrypt
+    volumes:
+      - nginxconfd:/etc/nginx/conf.d
+      - nginxvhostd:/etc/nginx/vhost.d
+      - nginxhtml:/usr/share/nginx/html
+      - nginxcerts:/etc/nginx/certs:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - NGINX_DOCKER_GEN_CONTAINER=nginx-gen
+      - NGINX_PROXY_CONTAINER=nginx
+      - TZ=${TZ}
+    depends_on:
+      - nginx
+      - nginx-gen # No configs to generate without these two running.
+      - sickrage
+
+  plex:
+    container_name: plex
+    restart: always
+    network_mode: host
+    image: wernight/plex-media-server:autoupdate
+    volumes:
+      - /media/DockerData/plex/config:/config
+      - /media/DockerDownloads:/downloads
+    environment:
+      - TZ=${TZ}
+  #  user: 1000
+  # Doesn't work yet, have logged ticket with upstream.
+
+  samba:
+    container_name: samba
+    image: dperson/samba
+    network_mode: host
+    restart: always
+    environment:
+      - TZ=${TZ}
+
+  sickrage:
+    container_name: sickrage
+    restart: always
+    build: sickrage
+    ports:
+      - 8081:8081
+    volumes:
+      - /media/DockerData/sickrage/config:/config
+      - /media/DockerDownloads:/downloads
+      - /media/DockerData/sabnzbd/config:/sabnzbdconfig
+      - incomplete-nzbs:/incomplete-nzbs
+      - nzbtomedia:/nzbtomedia
+    depends_on:
+      - transmission
+      - sabnzbd
+    environment:
+      - PUID=1000
+      - PGID=999
+      - TZ=${TZ}
+      - VIRTUAL_NETWORK=nginx-proxy
+      - SSL_POLICY=Mozilla-Modern # This is the primary endpoint, and where settings for nginx are set.
+    networks:
+      - proxy-tier
+
+  sabnzbd:
+    container_name: sabnzbd
+    build: sabnzbd
+    restart: always
+    ports:
+      - 8082:8080
+    volumes:
+      - /media/DockerData/sabnzbd/config:/config
+      - /media/DockerDownloads:/downloads
+      - incomplete-nzbs:/incomplete-nzbs
+      - nzbtomedia:/nzbtomedia
+      - sabnzbdfuture:/config/admin/future
+    environment:
+      - PUID=1000
+      - PGID=999
+      - TZ=${TZ}
+    networks:
+      - proxy-tier
+
+  subsonic:
+    container_name: subsonic
+    restart: always
+    image: hurricane/subsonic:stable
+    volumes:
+      - /media/DockerData/subsonic/config:/subsonic
+    expose:
+      - 4040
+    environment:
+      - KEEP_TRANSCODE=false
+      - APP_UID=1000
+      - APP_GID=999
+      - CONTEXT_PATH=/subsonic
+      - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      - LANG=en_US.UTF-8
+      - APP_NAME=subsonic
+      - IMG_NAME=subsonic
+      - TAG_NAME=latest
+      - VIRTUAL_NETWORK=nginx-proxy
+      - MAX_MEM=2048
+      - TZ=${TZ}
+    networks:
+      - proxy-tier
+
+  timemachine-avahi:
+    container_name: timemachine-avahi
+    restart: always
+    network_mode: host
+    build: timemachine-avahi
+    environment:
+      - TZ=${TZ}
+
+  transmission:
+    container_name: transmission
+    restart: always
+    build: transmission
+    network_mode: host # disables transmission hostname from other containers.. referring to transmission by localhost IP
+    # not really gonna help with anything, since my Vagrant is NATTed
+    #TODO: I need a uPNP capable redirector for my exposed ports, and also a solution for vagrant NAT.
+    ports:
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp
+    volumes:
+      - /media/DockerData/transmission/config:/config
+      - /media/DockerDownloads:/downloads
+      - nzbtomedia:/nzbtomedia
+    environment:
+      - PUID=1000
+      - PGID=999
+      - TZ=${TZ}
+    # networks:
+    #   - proxy-tier
+
+  timemachine:
+    container_name: timemachine
+    restart: always
+    image: odarriba/timemachine
+    ports:
+      - 548:548
+      - 636:636
+    depends_on:
+      - timemachine-avahi
+    environment:
+      - TZ=${TZ}
+      - PUID=1000
+      - PGID=999
+
+  webdav:
+    container_name: webdav
+    restart: always
+    #image: NoahO/webdav
+    build: webdav
+    depends_on:
+      - nginx
+    volumes:
+      - /media/DockerData/webdav/data:/media/webdav
+    expose:
+      - 80
+    environment:
+      - TZ=${TZ}
+    networks:
+      - proxy-tier
+
+volumes:
+  nginxconfd:
+  nginxvhostd:
+  nginxhtml:
+  nginxcerts:
+  incomplete-nzbs:
+  nzbtomedia:
+  sabnzbdfuture: #Needed to work around long file names in windows.
+
+networks:
+  proxy-tier:
