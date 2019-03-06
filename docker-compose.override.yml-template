@@ -1,0 +1,56 @@
+version: "3.7"
+services:
+  plex:
+    volumes:
+      - /media/data/share/Music:/Music
+      - /media/data/share/Musicvids:/MusicVideos
+    environment:
+      - PLEX_LOGIN=email
+      - PLEX_PASSWORD=password
+
+  ddclient:
+    environment:
+      - DDNS_HOST=hostname.dedyn.io
+      - DDNS_PASSWORD=password
+
+  sabnzbd:
+    hostname: hostname.dedyn.io
+
+  sickrage:
+    environment:
+      - VIRTUAL_HOST=hostname.dedyn.io
+      - LETSENCRYPT_HOST=hostname.dedyn.io
+      - LETSENCRYPT_EMAIL=email
+
+  btsync:
+    volumes:
+      - /media/data/BTSync:/mnt/mounted_folders/BTSync
+
+  crashplan:
+    volumes:
+      - /media/data:/crashplan/datadrive
+      - /media/externalbackups:/crashplan/externalbackups
+      - /media/backups:/storage
+
+  timemachine:
+    network_mode: host
+    environment:
+      - AFP_LOGIN=Username
+      - AFP_PASSWORD=Password
+      - AFP_NAME=localnetworkhostname
+    volumes:
+      - /media/timemachine:/timemachine
+
+  samba:
+    volumes:
+      - /media/data/share/:/media/share
+    command:
+      - -s
+      - Share;/media/share;yes;no;yes;all;none;share
+
+  subsonic:
+    volumes:
+      - /media/data/share/Music:/music
+    environment:
+      - APP_USER=deploy
+    hostname: hostname.dedyn.io
