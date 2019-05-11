@@ -19,7 +19,7 @@ script:
   # Display containers
   - docker ps --all
   # Detect if any containers are unhealthy and fail
-  - docker ps --all | grep 'starting\|unhealthy' && exit 1 || true
+  - docker ps --all | grep 'starting\|unhealthy' && return 1 || true
   # Inspect unhealthy containers
   - docker ps --all | grep 'starting\|unhealthy' | cut -f1 -d ' ' | xargs docker inspect || true
   # Display logs of unhealthy containers
