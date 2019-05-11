@@ -114,14 +114,14 @@ services:
     container_name: plex
     restart: always
     network_mode: host
-    image: wernight/plex-media-server:autoupdate
+    image: linuxserver/plex
     volumes:
       - /media/DockerData/plex/config:/config
       - /media/DockerDownloads:/downloads
     environment:
       - TZ=${TZ}
-  #  user: 1000
-  # Doesn't work yet, have logged ticket with upstream.
+      - PUID=1000
+      - PGID=999
 
   samba:
     container_name: samba

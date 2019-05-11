@@ -4,9 +4,9 @@ services:
     volumes:
       - /media/data/share/Music:/Music
       - /media/data/share/Musicvids:/MusicVideos
-    environment:
-      - PLEX_LOGIN=email
-      - PLEX_PASSWORD=password
+    #If your device supports quicksync, this speeds up transcoding
+    devices:
+      - /dev/dri:/dev/dri
 
   ddclient:
     environment:
