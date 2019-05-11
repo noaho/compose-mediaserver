@@ -1,0 +1,26 @@
+dist: xenial
+language: minimal
+services:
+  - docker
+
+env:
+  global:
+    - SLUG="${TRAVIS_REPO_SLUG/docker-/}"
+
+before_install:
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - sudo apt-get update
+  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+
+script:
+  - docker-compose up -d
+  - sleep 60
+  # Display started containers
+  - docker-compose ps
+  # Detect if any containers are unhealthy and fail
+  - docker-compose ps | grep 'starting\|unhealthy' && return 1
+  # Inspect unhealthy containers
+  - docker-compose ps | grep 'starting\|unhealthy' | cut -f1 -d ' ' | xargs docker inspect
+  # Display logs of unhealthy containers
+  - docker-compose ps | grep 'starting\|unhealthy' | cut -f1 -d ' ' | xargs docker logs
