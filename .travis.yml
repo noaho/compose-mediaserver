@@ -15,12 +15,12 @@ before_install:
 
 script:
   - docker-compose up -d
-  - sleep 60
+  - sleep 120
   # Display started containers
   - docker-compose ps
   # Detect if any containers are unhealthy and fail
   - docker-compose ps | grep 'starting\|unhealthy' && return 1
   # Inspect unhealthy containers
-  - docker-compose ps | grep 'starting\|unhealthy' | cut -f1 -d ' ' | xargs docker inspect
+  - docker-compose ps | grep 'starting\|unhealthy' | cut -f1 -d ' ' | xargs docker inspect || true
   # Display logs of unhealthy containers
-  - docker-compose ps | grep 'starting\|unhealthy' | cut -f1 -d ' ' | xargs docker logs
+  - docker-compose ps | grep 'starting\|unhealthy' | cut -f1 -d ' ' | xargs docker logs || true
