@@ -18,9 +18,9 @@
 	path = sabnzbd
 	url = https://github.com/NoahO/docker-sabnzbd
 	branch = master
-[submodule "sickchill"]
-	path = sickchill
-	url = https://github.com/noaho/docker-sickchill
+[submodule "sickrage"]
+	path = sickrage
+	url = https://github.com/NoahO/docker-sickrage
 	branch = master
 [submodule "timemachine-avahi"]
 	path = timemachine-avahi

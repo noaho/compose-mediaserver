@@ -108,7 +108,7 @@ services:
     depends_on:
       - nginx
       - nginx-gen # No configs to generate without these two running.
-      - sickchill
+      - sickrage
 
   plex:
     container_name: plex
@@ -131,14 +131,14 @@ services:
     environment:
       - TZ=${TZ}
 
-  sickchill:
-    container_name: sickchill
+  sickrage:
+    container_name: sickrage
     restart: always
-    build: sickchill
+    build: sickrage
     ports:
       - 8081:8081
     volumes:
-      - /media/DockerData/sickchill/config:/config
+      - /media/DockerData/sickrage/config:/config
       - /media/DockerDownloads:/downloads
       - /media/DockerData/sabnzbd/config:/sabnzbdconfig
       - incomplete-nzbs:/incomplete-nzbs
