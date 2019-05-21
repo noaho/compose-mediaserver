@@ -15,7 +15,7 @@ before_install:
 
 script:
   - docker-compose up -d
-  - sleep 600
+  - sleep 120
   # Display containers
   - docker ps --all
   # Detect if any containers are unhealthy and fail
