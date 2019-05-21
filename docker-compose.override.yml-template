@@ -16,7 +16,7 @@ services:
   sabnzbd:
     hostname: hostname.dedyn.io
 
-  sickrage:
+  sickchill:
     environment:
       - VIRTUAL_HOST=hostname.dedyn.io
       - LETSENCRYPT_HOST=hostname.dedyn.io
