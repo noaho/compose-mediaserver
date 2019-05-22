@@ -98,7 +98,7 @@ services:
     volumes:
       - nginxconfd:/etc/nginx/conf.d
       - nginxvhostd:/etc/nginx/vhost.d
-      - nginxhtml:/usr/share/html
+      - nginxhtml:/usr/share/nginx/html
       - nginxcerts:/etc/nginx/certs:rw
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
