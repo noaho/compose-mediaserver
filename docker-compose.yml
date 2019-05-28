@@ -210,9 +210,10 @@ services:
     container_name: transmission
     restart: always
     build: transmission
-    network_mode: host # disables transmission hostname from other containers.. referring to transmission by localhost IP
+    #network_mode: host # disables transmission hostname from other containers.. referring to transmission by localhost IP
     # not really gonna help with anything, since my Vagrant is NATTed
     #TODO: I need a uPNP capable redirector for my exposed ports, and also a solution for vagrant NAT.
+    # This also causes massive problems, because I can't communicate internally with sickchill, etc. So disabling.
     ports:
       - 9091:9091
       - 51413:51413
