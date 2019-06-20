@@ -32,7 +32,7 @@ services:
       - /media/DockerData/transmission/config:/transmissionconfig
       - /media/DockerData/couchpotato/config:/config
       - /media/DockerDownloads:/downloads
-      - incomplete-nzbs:/incomplete-nzbs
+      - /media/DockerData/sabnzbd/incomplete-sabnzbd:/incomplete-nzbs
       - nzbtomedia:/nzbtomedia
     depends_on:
       - transmission
@@ -141,7 +141,7 @@ services:
       - /media/DockerData/sickchill/config:/config
       - /media/DockerDownloads:/downloads
       - /media/DockerData/sabnzbd/config:/sabnzbdconfig
-      - incomplete-nzbs:/incomplete-nzbs
+      - /media/DockerData/sabnzbd/incomplete-sabnzbd:/incomplete-nzbs
       - nzbtomedia:/nzbtomedia
     depends_on:
       - transmission
@@ -164,7 +164,7 @@ services:
     volumes:
       - /media/DockerData/sabnzbd/config:/config
       - /media/DockerDownloads:/downloads
-      - incomplete-nzbs:/incomplete-nzbs
+      - /media/DockerData/sabnzbd/incomplete-sabnzbd:/incomplete-nzbs
       - nzbtomedia:/nzbtomedia
       - sabnzbdfuture:/config/admin/future
     environment:
@@ -226,8 +226,8 @@ services:
       - PUID=1000
       - PGID=999
       - TZ=${TZ}
-    # networks:
-    #   - proxy-tier
+    networks:
+      - proxy-tier
 
   timemachine:
     container_name: timemachine
