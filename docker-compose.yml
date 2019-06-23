@@ -32,7 +32,7 @@ services:
       - /media/DockerData/transmission/config:/transmissionconfig
       - /media/DockerData/couchpotato/config:/config
       - /media/DockerDownloads:/downloads
-      - /media/DockerData/sabnzbd/incomplete-sabnzbd:/incomplete-nzbs
+      - incomplete-nzbs:/incomplete-nzbs
       - nzbtomedia:/nzbtomedia
     depends_on:
       - transmission
@@ -141,7 +141,7 @@ services:
       - /media/DockerData/sickchill/config:/config
       - /media/DockerDownloads:/downloads
       - /media/DockerData/sabnzbd/config:/sabnzbdconfig
-      - /media/DockerData/sabnzbd/incomplete-sabnzbd:/incomplete-nzbs
+      - incomplete-nzbs:/incomplete-nzbs
       - nzbtomedia:/nzbtomedia
     depends_on:
       - transmission
@@ -164,7 +164,7 @@ services:
     volumes:
       - /media/DockerData/sabnzbd/config:/config
       - /media/DockerDownloads:/downloads
-      - /media/DockerData/sabnzbd/incomplete-sabnzbd:/incomplete-nzbs
+      - incomplete-nzbs:/incomplete-nzbs # The reason this is local to container is to workaround problems with long file names
       - nzbtomedia:/nzbtomedia
       - sabnzbdfuture:/config/admin/future
     environment:
@@ -263,7 +263,7 @@ volumes:
   nginxconfd:
   nginxvhostd:
   nginxhtml:
-  nginxcerts:
+  nginxcerts: # Would prefer to have this persistent in DockerData, but relies on symlinks which virtualbox doesn't support.
   incomplete-nzbs:
   nzbtomedia:
   sabnzbdfuture: #Needed to work around long file names in windows.
