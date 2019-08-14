@@ -2,8 +2,8 @@ version: "3.7"
 services:
   plex:
     volumes:
-      - /media/data/share/Music:/Music
-      - /media/data/share/Musicvids:/MusicVideos
+      - /media/data/Share/Music:/Music
+      - /media/data/Share/Musicvids:/MusicVideos
     #If your device supports quicksync, this speeds up transcoding
     devices:
       - /dev/dri:/dev/dri
@@ -43,14 +43,14 @@ services:
 
   samba:
     volumes:
-      - /media/data/share/:/media/share
+      - /media/data/Share/:/media/Share
     command:
       - -s
-      - Share;/media/share;yes;no;yes;all;none;share
+      - Share;/media/Share;yes;no;yes;all;none;Share
 
-  subsonic:
+  airsonic:
     volumes:
-      - /media/data/share/Music:/music
+      - /media/data/Share/Music:/music
     environment:
       - APP_USER=deploy
     hostname: hostname.dedyn.io

@@ -33,3 +33,12 @@
 [submodule "sickchill"]
 	path = sickchill
 	url = https://github.com/noaho/docker-sickchill/
+[submodule "nextcloud"]
+	path = nextcloud
+	url = https://github.com/noaho/docker-nextcloud
+[submodule "jackett"]
+	path = jackett
+	url = https://github.com/noaho/docker-jackett
+[submodule "hydra2"]
+	path = hydra2
+	url = https://github.com/noaho/docker-hydra2
