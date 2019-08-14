@@ -65,25 +65,25 @@ services:
       - PGID=1000
       - TZ=${TZ}
 
-  calibre:
-    image: linuxserver/calibre
-    container_name: calibre
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=${TZ}
-    volumes:
-      - /media/DockerData/calibre/config:/config
-    expose:
-      - 8080:8080
-    restart: unless-stopped
+  # calibre:
+  #   image: linuxserver/calibre
+  #   container_name: calibre
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - TZ=${TZ}
+  #   volumes:
+  #     - /media/DockerData/calibre/config:/config
+  #   expose:
+  #     - 8080
+  #   restart: unless-stopped
 
-  guacd:
-    image: linuxserver/guacd
-    container_name: guacd
-    expose:
-      - 4822:4822
-    restart: unless-stopped
+  # guacd:
+  #   image: linuxserver/guacd
+  #   container_name: guacd
+  #   expose:
+  #     - 4822
+  #   restart: unless-stopped
 
   ddclient:
     container_name: ddclient
