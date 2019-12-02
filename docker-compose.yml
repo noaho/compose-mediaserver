@@ -164,6 +164,7 @@ services:
     depends_on:
       - transmission
       - sabnzbd
+      - hydra2
     environment:
       - PUID=1000
       - PGID=1000
