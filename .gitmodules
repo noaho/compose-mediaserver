@@ -42,3 +42,6 @@
 [submodule "hydra2"]
 	path = hydra2
 	url = https://github.com/noaho/docker-hydra2
+[submodule "lidarr"]
+	path = lidarr
+	url = https://github.com/noaho/docker-lidarr
