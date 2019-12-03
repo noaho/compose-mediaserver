@@ -163,12 +163,14 @@ services:
 
   samba:
     container_name: samba
-    build: samba
-    #image: dperson/samba
+    #build: samba
+    image: dperson/samba
     network_mode: host
     restart: unless-stopped
     environment:
       - TZ=${TZ}
+      - USERID=1000
+      - GROUPID=1000
 
   sickchill:
     container_name: sickchill
