@@ -3,8 +3,9 @@ services:
   resiliosync:
     container_name: resiliosync
     restart: unless-stopped
-    expose:
-      - 8888
+    ports:
+      - 8888:8888
+      - 55555:55555
     image: linuxserver/resilio-sync
     volumes:
       - /media/DockerData/resiliosync/config:/config
@@ -54,7 +55,7 @@ services:
       - /media/DockerData/transmission/config:/transmissionconfig
       - /media/DockerData/hydra2/config:/hydra2config
       - /media/DockerData/couchpotato/config:/config
-      - /media/DockerDownloads:/downloads
+      - downloads:/downloads
       - incomplete-nzbs:/incomplete-nzbs
       - nzbtomedia:/nzbtomedia
     depends_on:
@@ -95,6 +96,26 @@ services:
       - DDNS_DOMAIN=dedyn.io
       - DDNS_PROTOCOL=dyndns2
 
+  lidarr:
+    #image: linuxserver/lidarr
+    container_name: lidarr
+    build: lidarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+      - UMASK_SET=022 #optional
+    volumes:
+      - /media/DockerData/lidarr/config:/config
+      - /media/Data/Share/Music:/music
+      - downloads:/downloads
+      - /media/DockerData/sabnzbd/config:/sabnzbdconfig
+      - incomplete-nzbs:/incomplete-nzbs
+      - nzbtomedia:/nzbtomedia
+    expose:
+      - 8686
+    restart: unless-stopped
+
   letsencrypt:
     image: linuxserver/letsencrypt
     container_name: letsencrypt
@@ -134,7 +155,7 @@ services:
     image: linuxserver/plex
     volumes:
       - /media/DockerData/plex/config:/config
-      - /media/DockerDownloads:/downloads
+      - downloads:/downloads
     environment:
       - TZ=${TZ}
       - PUID=1000
@@ -142,7 +163,8 @@ services:
 
   samba:
     container_name: samba
-    image: dperson/samba
+    build: samba
+    #image: dperson/samba
     network_mode: host
     restart: unless-stopped
     environment:
@@ -164,6 +186,8 @@ services:
     depends_on:
       - transmission
       - sabnzbd
+      - hydra2
+      - jackett
     environment:
       - PUID=1000
       - PGID=1000
@@ -177,7 +201,7 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=${TZ}
-      - RUN_OPTS=run options here #optional
+      #- RUN_OPTS=run options here #optional
     volumes:
       - /media/DockerData/jackett/config:/config
     #   - path to blackhole:/downloads
@@ -198,7 +222,7 @@ services:
     volumes:
       - /media/DockerData/hydra2/config:/config
       - /media/DockerData/jackett/config:/jackettconfig
-      - /media/DockerDownloads:/downloads
+      - downloads:/downloads
       - /media/DockerData/sabnzbd/config:/sabnzbdconfig
     restart: unless-stopped
 
@@ -210,7 +234,7 @@ services:
       - 8080
     volumes:
       - /media/DockerData/sabnzbd/config:/config
-      - /media/DockerDownloads:/downloads
+      - downloads:/downloads
       - incomplete-nzbs:/incomplete-nzbs # The reason this is local to container is to workaround problems with long file names
       - nzbtomedia:/nzbtomedia
       - sabnzbdfuture:/config/admin/future
@@ -227,7 +251,7 @@ services:
     restart: unless-stopped
     volumes:
       - /media/DockerData/airsonic/config:/config
-      - /media/data/Share/Music:/music
+      - /media/Data/Share/Music:/music
     expose:
       - 4040
     environment:
@@ -235,6 +259,22 @@ services:
       - PGID=1000
       - JAVA_OPTS=-Xmx700m
       - CONTEXT_PATH=/airsonic
+      - TZ=${TZ}
+
+  pyload:
+    image: linuxserver/pyload
+    #build:
+    # context: ./pyload
+    container_name: pyload
+    restart: unless-stopped
+    volumes:
+      - /media/DockerData/pyload/config:/config
+      - downloads:/downloads
+    ports:
+      - 8000:8000
+    environment:
+      - PUID=1000
+      - PGID=1000
       - TZ=${TZ}
 
   nextcloud:
@@ -278,7 +318,7 @@ services:
       - 51413:51413/udp
     volumes:
       - /media/DockerData/transmission/config:/config
-      - /media/DockerDownloads:/downloads
+      - downloads:/downloads
       - nzbtomedia:/nzbtomedia
     environment:
       - PUID=1000
@@ -288,7 +328,8 @@ services:
   timemachine:
     container_name: timemachine
     restart: unless-stopped
-    image: odarriba/timemachine
+    build: timemachine
+   # image: odarriba/timemachine
     ports:
       - 548:548
       - 636:636
@@ -314,7 +355,55 @@ services:
       - TZ=${TZ}
       - UID=1000
 
+  openhab:
+    container_name: openhab
+    image: "openhab/openhab"
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/media/DockerData/openhab/config/openhab_addons:/openhab/addons"
+      - "/media/DockerData/openhab/config/openhab_conf:/openhab/conf"
+      - "/media/DockerData/openhab/config/openhab_userdata:/openhab/userdata"
+    environment:
+      OPENHAB_HTTP_PORT: "8080"
+      OPENHAB_HTTPS_PORT: "8443"
+
+  organizr:
+    container_name: openhab
+    image: linuxserver/organizr
+    container_name: organizr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+    volumes:
+       - /media/DockerData/organizr/config/:/config
+    expose:
+      - 80
+    restart: unless-stopped
+
+  freshrss:
+    container_name: freshrss
+    image: linuxserver/freshrss
+    container_name: freshrss
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+    volumes:
+       - /media/DockerData/freshrss/config/:/config
+    expose:
+      - 80
+    restart: unless-stopped
+
 volumes:
   incomplete-nzbs:
   nzbtomedia:
   sabnzbdfuture: #Needed to work around long file names in windows.
+  downloads:
+    driver_opts:
+      device: /media/DockerDownloads
+      type: none
+      o: bind
